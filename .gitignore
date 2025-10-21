@@ -1,0 +1,102 @@
+# ---- Python asosiy fayllar ----
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ---- Virtual environment ----
+venv/
+env/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# ---- Django fayllari ----
+*.log
+*.pot
+*.pyc
+*.pyo
+*.sqlite3
+db.sqlite3
+local_settings.py
+
+# ---- Django migrations (optional, agar lokalda yaratilib gitga chiqmasin desang) ----
+# Agar kerak bo‘lsa, pastdagini uncomment qil:
+# */migrations/*
+# !*/migrations/__init__.py
+
+# ---- Media va static fayllar ----
+media/
+staticfiles/
+static/
+assets/
+
+# ---- Environment va maxfiy fayllar ----
+.env
+*.env
+.env.*
+!.env.example
+
+# ---- IDE va editor fayllari ----
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*.bak
+
+# ---- OS fayllari ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Testlar va vaqtinchalik fayllar ----
+.coverage
+.tox/
+.pytest_cache/
+htmlcov/
+.cache/
+*.cover
+*.pid
+*.seed
+*.log
+
+# ---- Celery va Redis ----
+celerybeat-schedule
+celerybeat.pid
+
+# ---- Build va dist fayllar ----
+build/
+dist/
+.eggs/
+*.egg-info/
+*.egg
+MANIFEST
+
+# ---- MyPy, Black, isort va boshqalar ----
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pytype/
+.black/
+.isort.cfg
+.coverage
+
+# ---- Docker (agar ishlatsang) ----
+docker-compose.override.yml
+*.pid
+*.tar
+*.log
+*.sock
+
+# ---- NodeJS yoki frontend build (agar frontend bilan bog‘liq bo‘lsa) ----
+node_modules/
+npm-debug.log
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# ---- Uvicorn / Gunicorn / Deployment fayllar ----
+*.pid
+*.sock
+logs/
