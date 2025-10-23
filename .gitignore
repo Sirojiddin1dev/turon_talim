@@ -16,8 +16,8 @@ venv.bak/
 *.pot
 *.pyc
 *.pyo
-*.sqlite3
-db.sqlite3
+# *.sqlite3
+# db.sqlite3
 local_settings.py
 
 # ---- Django migrations (optional, agar lokalda yaratilib gitga chiqmasin desang) ----
