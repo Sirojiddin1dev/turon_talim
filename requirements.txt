@@ -10,23 +10,18 @@ drf-yasg==1.21.7         # Swagger dokumentatsiya uchun
 # ---- Autentifikatsiya va ruxsatlar ----
 djangorestframework-simplejwt==5.3.1  # JWT autentifikatsiya
 django-allauth==65.1.0
-dj-rest-auth==6.1.2
+dj-rest-auth==6.0.0
 
 # ---- Ma'lumotlar bazasi ----
 psycopg2-binary==2.9.9     # PostgreSQL uchun
-mysqlclient==2.2.5          # MySQL uchun (agar ishlatsang)
-# sqlite uchun qo‘shimcha kerak emas
 
-# ---- Asinxron ishlar, background tasks ----
-celery==5.4.0
-redis==5.1.1
-django-celery-beat==2.7.0
-django-celery-results==2.6.1
+
+
 
 # ---- Fayl saqlash, media, va static ----
 Pillow==11.0.0              # rasm ishlov berish uchun
 django-storages==1.14.4     # AWS S3, DigitalOcean Spaces va boshqalar bilan ishlash uchun
-boto3==1.35.30
+
 
 # ---- Xavfsizlik va optimizatsiya ----
 python-dotenv==1.0.1
@@ -40,16 +35,3 @@ isort==5.13.2               # importlarni tartiblash
 flake8==7.1.1               # linting
 ipython==8.28.0             # terminalda qulay ish
 
-# ---- Test va debugging ----
-pytest==8.3.3
-pytest-django==4.9.0
-django-debug-toolbar==4.4.6
-
-# ---- AI yoki analitika kerak bo‘lsa (optional) ----
-pandas==2.2.3
-numpy==2.1.2
-
-# ---- Deployment (optional) ----
-uvicorn==0.32.0             # agar ASGI yoki Channels ishlatsang
-daphne==4.1.2               # Django Channels uchun
-channels==4.1.0
