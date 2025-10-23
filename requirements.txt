@@ -1,37 +1,21 @@
-# ---- Django asosiy kutubxonalar ----
-Django==5.2.7
-djangorestframework==3.15.2
-django-cors-headers==4.4.0
-django-filter==24.3
-django-environ==0.11.2
-django-extensions==3.2.3
-drf-yasg==1.21.7         # Swagger dokumentatsiya uchun
-
-# ---- Autentifikatsiya va ruxsatlar ----
-djangorestframework-simplejwt==5.3.1  # JWT autentifikatsiya
-django-allauth==65.1.0
-dj-rest-auth==6.0.0
-
-# ---- Ma'lumotlar bazasi ----
-psycopg2-binary==2.9.9     # PostgreSQL uchun
-
-
-
-
-# ---- Fayl saqlash, media, va static ----
-Pillow==11.0.0              # rasm ishlov berish uchun
-django-storages==1.14.4     # AWS S3, DigitalOcean Spaces va boshqalar bilan ishlash uchun
-
-
-# ---- Xavfsizlik va optimizatsiya ----
-python-dotenv==1.0.1
-gunicorn==23.0.0
-whitenoise==6.7.0           # static fayllarni serve qilish uchun
-requests==2.32.3
-
-# ---- Developer qulayliklari ----
-black==24.10.0              # kod formatlash
-isort==5.13.2               # importlarni tartiblash
-flake8==7.1.1               # linting
-ipython==8.28.0             # terminalda qulay ish
-
+Django
+djangorestframework
+django-cors-headers
+django-filter
+django-environ
+django-extensions
+drf-yasg
+djangorestframework-simplejwt
+django-allauth
+dj-rest-auth
+psycopg2-binary
+Pillow
+django-storages
+python-dotenv
+gunicorn
+whitenoise
+requests
+black
+isort
+flake8
+ipython
