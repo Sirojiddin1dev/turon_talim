@@ -1,7 +1,16 @@
-from rest_framework.routers import DefaultRouter
-from .views import BannerViewSet
+from django.urls import path
+from .views import *
 
-router = DefaultRouter()
-router.register(r'banners', BannerViewSet, basename='banner')
-
-urlpatterns = router.urls
+urlpatterns = [
+    path('banners/', banner_list),
+    path('home-stats/', home_stats),
+    path('social-links/', social_links),
+    path('courses/', course_list),
+    path('teachers/', teacher_list),
+    path('about/', about_list),
+    path('contact/', contact_us),
+    path('branches/', branch_list),
+    path('subjects/', subject_list),
+    path('quizzes/', quiz_list),
+    path('certificates/', certificate_search),
+]

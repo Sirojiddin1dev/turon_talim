@@ -55,6 +55,7 @@ class SocialMediaLink(BaseModel):
 
 class CourseRoadMapField(BaseModel):
     info = models.TextField(_('Tavsif'))
+    road_maop = models.ForeignKey(to='CourseRoadMap', related_name='course_road_map', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _("Yo‘l xaritasi matni")
@@ -65,8 +66,7 @@ class CourseRoadMapField(BaseModel):
 
 class CourseRoadMap(BaseModel):
     name = models.CharField(_('Nomi'), max_length=50)
-    info = models.ManyToManyField(CourseRoadMapField, verbose_name=_("Izohlar"),
-                                  related_name='roadmapfield')
+    course = models.ForeignKey(to='Course', related_name='course', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _("Yo‘l xaritasi")
@@ -80,8 +80,6 @@ class Course(BaseModel):
     name = models.CharField(_('Kurs nomi'), max_length=50)
     description = models.TextField(_('Tavsif'))
     duration = models.IntegerField(_('Davomiyligi (oy)'))
-    roadmap = models.ManyToManyField(CourseRoadMap, verbose_name=_("Yo‘l xaritasi"),
-                                     related_name='roadmap')
 
     class Meta:
         verbose_name = _("Kurs")
