@@ -159,6 +159,12 @@ class Subject(BaseModel):
 
 
 class Quiz(BaseModel):
+    DIFFICULTY = (
+        ("easy", "Oson"),
+        ("medium", "O‘rta"),
+        ("hard", "Qiyin"),
+    )
+
     name = models.CharField(_('Savol'), max_length=100)
     answer1 = models.CharField(_('Variant 1'), max_length=50)
     answer2 = models.CharField(_('Variant 2'), max_length=50)
@@ -175,12 +181,18 @@ class Quiz(BaseModel):
     correct_answer = models.IntegerField(_('To‘g‘ri javob'), choices=ANSWER)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, verbose_name=_("Fan"))
 
+    difficulty = models.CharField(
+        _('Qiyinchilik darajasi'),
+        max_length=10,
+        choices=DIFFICULTY,
+        default="medium"
+    )
+
     class Meta:
         verbose_name = _("Test")
         verbose_name_plural = _("Testlar")
         db_table = "quiz"
         ordering = ['-created_at']
-
 
 class Certificate(BaseModel):
     image = models.ImageField(_('Rasm'), upload_to='Certificate_photos/')
