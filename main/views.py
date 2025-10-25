@@ -15,7 +15,7 @@ from .serializers import *
 )
 @api_view(['GET'])
 def banner_list(request):
-    banners = Banner.objects.all()
+    banners = Banner.objects.all().order_by('-id')[:6]
     serializer = BannerSerializer(banners, many=True)
     return Response(serializer.data)
 
@@ -27,8 +27,8 @@ def banner_list(request):
 )
 @api_view(['GET'])
 def home_stats(request):
-    stats = HomeStats.objects.all()
-    serializer = HomeStatsSerializer(stats, many=True)
+    stats = HomeStats.objects.last()
+    serializer = HomeStatsSerializer(stats)
     return Response(serializer.data)
 
 
@@ -39,8 +39,8 @@ def home_stats(request):
 )
 @api_view(['GET'])
 def social_links(request):
-    links = SocialMediaLink.objects.all()
-    serializer = SocialMediaLinkSerializer(links, many=True)
+    links = SocialMediaLink.objects.last()
+    serializer = SocialMediaLinkSerializer(links)
     return Response(serializer.data)
 
 
@@ -75,8 +75,8 @@ def teacher_list(request):
 )
 @api_view(['GET'])
 def about_list(request):
-    data = About.objects.all()
-    serializer = AboutSerializer(data, many=True)
+    data = About.objects.last()
+    serializer = AboutSerializer(data)
     return Response(serializer.data)
 
 
@@ -130,10 +130,20 @@ def subject_list(request):
 @api_view(['GET'])
 def quiz_list(request):
     subject_id = request.GET.get('subject_id')
-    quiz = Quiz.objects.filter(subject_id=subject_id) if subject_id else Quiz.objects.all()
+    difficulty = request.GET.get('difficulty')
+
+    quiz = Quiz.objects.all()
+
+    if subject_id:
+        quiz = quiz.filter(subject_id=subject_id)
+
+    if difficulty:
+        quiz = quiz.filter(difficulty=difficulty)
+
+    quiz = quiz.order_by('?')[:20]
+
     serializer = QuizSerializer(quiz, many=True)
     return Response(serializer.data)
-
 
 @swagger_auto_schema(
     method='get',

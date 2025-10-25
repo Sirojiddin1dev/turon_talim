@@ -151,10 +151,11 @@ class SubjectAdmin(ModelAdmin):
 
 @admin.register(Quiz)
 class QuizAdmin(ModelAdmin):
-    list_display = ("name", "subject", "correct_answer", "created_at")
+    list_display = ("name", "subject", "difficulty", "correct_answer", "created_at")
     search_fields = ("name",)
-    list_filter = ("subject",)
+    list_filter = ("subject", "difficulty")
     readonly_fields = ("created_at", "updated_at")
+    ordering = ("-created_at",)
 
 
 @admin.register(Certificate)
