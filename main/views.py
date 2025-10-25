@@ -6,6 +6,7 @@ from drf_yasg import openapi
 
 from .models import *
 from .serializers import *
+from .utils import handle_request, AResponse as Response
 
 
 @swagger_auto_schema(
@@ -14,6 +15,7 @@ from .serializers import *
     operation_description="Bannerlar ro‘yhatini olish"
 )
 @api_view(['GET'])
+@handle_request
 def banner_list(request):
     banners = Banner.objects.all()
     serializer = BannerSerializer(banners, many=True)
@@ -26,6 +28,7 @@ def banner_list(request):
     operation_description="Home statistikalar"
 )
 @api_view(['GET'])
+@handle_request
 def home_stats(request):
     stats = HomeStats.objects.all()
     serializer = HomeStatsSerializer(stats, many=True)
@@ -38,6 +41,7 @@ def home_stats(request):
     operation_description="Ijtimoiy tarmoqlar linklari"
 )
 @api_view(['GET'])
+@handle_request
 def social_links(request):
     links = SocialMediaLink.objects.all()
     serializer = SocialMediaLinkSerializer(links, many=True)
@@ -50,6 +54,7 @@ def social_links(request):
     operation_description="Kurslar ro‘yxati"
 )
 @api_view(['GET'])
+@handle_request
 def course_list(request):
     course = Course.objects.all()
     serializer = CourseSerializer(course, many=True)
@@ -62,6 +67,7 @@ def course_list(request):
     operation_description="O‘qituvchilar ro‘yxati"
 )
 @api_view(['GET'])
+@handle_request
 def teacher_list(request):
     teachers = Teacher.objects.all()
     serializer = TeacherSerializer(teachers, many=True)
@@ -74,6 +80,7 @@ def teacher_list(request):
     operation_description="Biz haqimizda maʼlumotlar"
 )
 @api_view(['GET'])
+@handle_request
 def about_list(request):
     data = About.objects.all()
     serializer = AboutSerializer(data, many=True)
@@ -87,6 +94,7 @@ def about_list(request):
     operation_description="Kontakt xabar jo‘natish"
 )
 @api_view(['POST'])
+@handle_request
 def contact_us(request):
     serializer = ContactUsSerializer(data=request.data)
     if serializer.is_valid():
@@ -101,6 +109,7 @@ def contact_us(request):
     operation_description="Filiallar ro‘yxati"
 )
 @api_view(['GET'])
+@handle_request
 def branch_list(request):
     branch = Branch.objects.all()
     serializer = BranchSerializer(branch, many=True)
@@ -113,6 +122,7 @@ def branch_list(request):
     operation_description="Fanlar ro‘yxati"
 )
 @api_view(['GET'])
+@handle_request
 def subject_list(request):
     subjects = Subject.objects.all()
     serializer = SubjectSerializer(subjects, many=True)
@@ -128,6 +138,7 @@ def subject_list(request):
     operation_description="Testlar ro‘yxati (subject_id bo‘yicha)"
 )
 @api_view(['GET'])
+@handle_request
 def quiz_list(request):
     subject_id = request.GET.get('subject_id')
     quiz = Quiz.objects.filter(subject_id=subject_id) if subject_id else Quiz.objects.all()
@@ -144,6 +155,7 @@ def quiz_list(request):
     operation_description="Sertifikatlarni topish"
 )
 @api_view(['GET'])
+@handle_request
 def certificate_search(request):
     subject_id = request.GET.get('subject_id', '')
     cert = Certificate.objects.filter(subject=subject_id)

@@ -19,3 +19,4 @@ black
 isort
 flake8
 ipython
+django-unfold
