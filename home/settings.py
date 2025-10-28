@@ -28,6 +28,24 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 
+from django.templatetags.static import static
+from django.utils.translation import gettext_lazy as _
+
+UNFOLD = {
+  "SITE_TITLE": _("Turon Talim Edu Sayt Admini"),
+  "SITE_HEADER": _("Turon Talim Edu Sayt Admin"),
+  "SITE_SUBHEADER": _("Platforma boshqaruvi"),
+  "SITE_URL": "/",
+  "THEME": "dark",  # yoki "dark"
+  "STYLES": [
+     lambda request: static("css/custom-admin.css"),
+  ],
+  "SCRIPTS": [
+     lambda request: static("js/custom-admin.js"),
+  ],
+}
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -46,7 +64,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main.apps.MainConfig',
     'drf_yasg',
-    "rest_framework"
+    "rest_framework",
+    "nested_admin",
 ]
 
 MIDDLEWARE = [

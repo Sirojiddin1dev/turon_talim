@@ -19,6 +19,9 @@ class Banner(BaseModel):
     description = models.CharField(_('Izoh'), max_length=200)
     image = models.ImageField(_('Rasm'), upload_to='banner_photos/')
 
+    def __str__(self):
+        return self.title
+
     class Meta:
         verbose_name = _("Banner")
         verbose_name_plural = _("Bannerlar")
@@ -57,6 +60,9 @@ class CourseRoadMapField(BaseModel):
     info = models.TextField(_('Tavsif'))
     road_maop = models.ForeignKey(to='CourseRoadMap', related_name='course_road_map', on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.info
+
     class Meta:
         verbose_name = _("Yo‘l xaritasi matni")
         verbose_name_plural = _("Yo‘l xaritasi matnlari")
@@ -67,6 +73,9 @@ class CourseRoadMapField(BaseModel):
 class CourseRoadMap(BaseModel):
     name = models.CharField(_('Nomi'), max_length=50)
     course = models.ForeignKey(to='Course', related_name='course', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
 
     class Meta:
         verbose_name = _("Yo‘l xaritasi")
@@ -80,6 +89,9 @@ class Course(BaseModel):
     name = models.CharField(_('Kurs nomi'), max_length=50)
     description = models.TextField(_('Tavsif'))
     duration = models.IntegerField(_('Davomiyligi (oy)'))
+
+    def __str__(self):
+        return self.name
 
     class Meta:
         verbose_name = _("Kurs")
@@ -97,6 +109,9 @@ class Teacher(BaseModel):
     telegram = models.URLField(_('Telegram'))
     facebook = models.URLField(_('Facebook'))
     video = models.URLField(_('Video havola'))
+
+    def __str__(self):
+        return self.full_name
 
     class Meta:
         verbose_name = _("O‘qituvchi")
@@ -126,6 +141,9 @@ class ContactUs(BaseModel):
     email = models.CharField(_('Email'), max_length=255)
     message = models.TextField(_('Xabar'))
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         verbose_name = _("Aloqa")
         verbose_name_plural = _("Aloqalar")
@@ -140,6 +158,9 @@ class Branch(BaseModel):
     lat = models.CharField(_('Latitude'), max_length=255)
     lot = models.CharField(_('Longitude'), max_length=255)
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         verbose_name = _("Filial")
         verbose_name_plural = _("Filiallar")
@@ -150,6 +171,9 @@ class Branch(BaseModel):
 class Subject(BaseModel):
     name = models.CharField(_('Fan nomi'), max_length=50)
     image = models.ImageField(_('Rasm'), upload_to="Subject_photos")
+
+    def __str__(self):
+        return self.name
 
     class Meta:
         verbose_name = _("Fan")
@@ -188,17 +212,24 @@ class Quiz(BaseModel):
         default="medium"
     )
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         verbose_name = _("Test")
         verbose_name_plural = _("Testlar")
         db_table = "quiz"
         ordering = ['-created_at']
 
+
 class Certificate(BaseModel):
     image = models.ImageField(_('Rasm'), upload_to='Certificate_photos/')
     full_name = models.CharField(_('F.I.Sh'), max_length=100)
     level = models.CharField(_('Daraja'), max_length=100)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, verbose_name=_("Fan"))
+
+    def __str__(self):
+        return self.full_name
 
     class Meta:
         verbose_name = _("Sertifikat")
@@ -208,7 +239,8 @@ class Certificate(BaseModel):
         
         
 class RegisterImage(BaseModel):
-    image=models.ImageField(upload_to='register_photos/')
+    image = models.ImageField(upload_to='register_photos/')
+
 
 class TelegramAdmin(BaseModel):
     telegram_id = models.IntegerField()

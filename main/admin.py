@@ -7,38 +7,119 @@ from .models import (
     Banner, HomeStats, SocialMediaLink, Teacher, About,
     ContactUs, Branch, Subject, Quiz, Certificate
 )
+from django.contrib.auth.models import Group
+admin.site.unregister(Group)
+from unfold.admin import ModelAdmin
+from django.contrib import admin
+import nested_admin
+from .models import Course, CourseRoadMap, CourseRoadMapField
+from django.utils.html import mark_safe
+from django import forms
+from django.utils.html import mark_safe
+
 
 # ========== IMAGE PREVIEW ==========
 
 def image_preview(obj):
     if getattr(obj, "image", None):
-        return mark_safe(f"<img src='{obj.image.url}' width='60' style='border-radius:8px;'>")
+        return mark_safe(f"<img src='{obj.image.url}' width='60' style='border-radius:8px;'/>")
     return "-"
 image_preview.short_description = "Rasm"
 
 
-# ========== INLINE CLASSLAR ==========
+# ---------- Qo'shma style (aniq ko'rinishi uchun) ----------
+INPUT_STYLE = {
+    "style": (
+        "border:1px solid #6b7280;"
+        "background:#0b1220;"
+        "color:#ffffff;"
+        "padding:8px 10px;"
+        "border-radius:8px;"
+        "width:100%;"
+        "box-sizing:border-box;"
+    )
+}
 
-class CourseRoadMapFieldInline(admin.TabularInline):
+TEXTAREA_STYLE = {
+    "style": (
+        "border:1px solid #6b7280;"
+        "background:#0b1220;"
+        "color:#ffffff;"
+        "padding:10px 12px;"
+        "border-radius:8px;"
+        "width:100%;"
+        "box-sizing:border-box;"
+    )
+}
+
+
+# ---------- Formlar (aniq label/placeholder + ko'rinadigan style) ----------
+class CourseRoadMapForm(forms.ModelForm):
+    class Meta:
+        model = CourseRoadMap
+        fields = ("name",)
+        labels = {"name": "Yo‘l xaritasi nomi"}
+        help_texts = {"name": "Masalan: Backend asoslari"}
+        widgets = {
+            "name": forms.TextInput(
+                attrs={"placeholder": "Masalan: Backend asoslari", **INPUT_STYLE}
+            )
+        }
+
+
+class CourseRoadMapFieldForm(forms.ModelForm):
+    class Meta:
+        model = CourseRoadMapField
+        fields = ("info",)
+        labels = {"info": "Tavsif (bosqich mazmuni)"}
+        help_texts = {"info": "Qisqacha mazmun: nimalar o‘rganiladi?"}
+        widgets = {
+            "info": forms.Textarea(
+                attrs={"rows": 4, "placeholder": "Masalan: Python sintaksisi, o‘zgaruvchilar, if/for...", **TEXTAREA_STYLE}
+            )
+        }
+
+
+# ---------- Nested inlines (collapse yo'q — hammasi ochiq) ----------
+class CourseRoadMapFieldInline(nested_admin.NestedStackedInline):
     model = CourseRoadMapField
-    extra = 1
+    form = CourseRoadMapFieldForm
+    extra = 0
+    can_delete = True
+    verbose_name = "Yo‘l xaritasi matni"
+    verbose_name_plural = "Yo‘l xaritasi matnlari"
+    fieldsets = (
+        ("Yo‘l xaritasi matnlari", {
+            "description": "Bu bo‘limda shu yo‘l xaritasining ichki bosqichlarini tavsiflab yozing.",
+            "fields": ("info",),
+        }),
+    )
 
 
-class CourseRoadMapInline(admin.TabularInline):
+class CourseRoadMapInline(nested_admin.NestedStackedInline):
     model = CourseRoadMap
-    extra = 1
+    form = CourseRoadMapForm
+    extra = 0
+    inlines = [CourseRoadMapFieldInline]
+    verbose_name = "Yo‘l xaritasi"
+    verbose_name_plural = "Yo‘l xaritalari"
+    fieldsets = (
+        ("Yo‘l xaritasi", {
+            "description": "Har bir yo‘l xaritasiga nom bering (masalan, ‘Backend asoslari’). Pastda uning bosqichlarini to‘ldirasiz.",
+            "fields": ("name",),
+        }),
+    )
 
 
-# ========== COURSE ADMIN ==========
-
+# ---------- Course admin ----------
 @admin.register(Course)
-class CourseAdmin(ModelAdmin):
+class CourseAdmin(nested_admin.NestedModelAdmin, ModelAdmin):
     list_display = ("id", image_preview, "name", "duration", "created_at")
     search_fields = ("name",)
     list_filter = ("duration",)
     readonly_fields = ("created_at", "updated_at")
-    inlines = [CourseRoadMapInline]
     ordering = ("-created_at",)
+    inlines = [CourseRoadMapInline]
 
     fieldsets = (
         ("Kurs maʼlumotlari", {
@@ -46,53 +127,10 @@ class CourseAdmin(ModelAdmin):
         }),
         ("Texnik", {
             "fields": ("created_at", "updated_at"),
-            "classes": ("collapse",)
+            # collapse olib tashladik — ko‘rinishi aniq bo‘lsin desangiz qoldiramiz
+            # "classes": ("collapse",)
         }),
     )
-
-
-# ========== ROADMAP ADMIN ==========
-
-@admin.register(CourseRoadMap)
-class CourseRoadMapAdmin(ModelAdmin):
-    list_display = ("id", "name", "course", "created_at")
-    search_fields = ("name",)
-    list_filter = ("course",)
-    readonly_fields = ("created_at", "updated_at")
-    inlines = [CourseRoadMapFieldInline]
-    ordering = ("-created_at",)
-
-    fieldsets = (
-        ("Yo‘l xaritasi", {
-            "fields": ("name", "course"),
-        }),
-        ("Texnik", {
-            "fields": ("created_at", "updated_at"),
-            "classes": ("collapse",)
-        }),
-    )
-
-
-# ========== ROADMAP FIELD ADMIN ==========
-
-@admin.register(CourseRoadMapField)
-class CourseRoadMapFieldAdmin(ModelAdmin):
-    list_display = ("id", "info", "road_maop", "created_at")
-    search_fields = ("info",)
-    list_filter = ("road_maop",)
-    readonly_fields = ("created_at", "updated_at")
-    ordering = ("-created_at",)
-
-    fieldsets = (
-        ("Matn", {
-            "fields": ("info", "road_maop")
-        }),
-        ("Texnik", {
-            "fields": ("created_at", "updated_at"),
-            "classes": ("collapse",)
-        }),
-    )
-
 
 # ========== QOLGAN MODELLAR ==========
 

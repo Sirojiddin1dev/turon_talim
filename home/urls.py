@@ -24,7 +24,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
+    path('nested_admin/', include('nested_admin.urls')),
     # App URL'lari
     path('api/', include('main.urls')),
 
