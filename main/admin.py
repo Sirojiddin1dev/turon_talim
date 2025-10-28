@@ -142,13 +142,6 @@ class BranchAdmin(ModelAdmin):
     readonly_fields = ("created_at", "updated_at")
 
 
-@admin.register(Subject)
-class SubjectAdmin(ModelAdmin):
-    list_display = ("name", image_preview, "created_at")
-    search_fields = ("name",)
-    readonly_fields = ("created_at", "updated_at")
-
-
 @admin.register(Quiz)
 class QuizAdmin(ModelAdmin):
     list_display = ("name", "subject", "difficulty", "correct_answer", "created_at")

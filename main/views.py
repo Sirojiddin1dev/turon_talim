@@ -8,6 +8,14 @@ from .models import *
 from .serializers import *
 from .utils import handle_request, AResponse as Response
 
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from .models import Quiz
+from .serializers import QuizSerializer
+import random
+
 
 @swagger_auto_schema(
     method='get',
@@ -132,29 +140,163 @@ def subject_list(request):
 @swagger_auto_schema(
     method='get',
     manual_parameters=[
-        openapi.Parameter('subject_id', openapi.IN_QUERY, description="Fan ID", type=openapi.TYPE_INTEGER)
+        openapi.Parameter('subject_id', openapi.IN_QUERY, description="Fan ID", type=openapi.TYPE_INTEGER),
     ],
     responses={200: QuizSerializer(many=True)},
-    operation_description="Testlar ro‘yxati (subject_id bo‘yicha)"
+    operation_description="Random 7 ta qiyin, 7 ta o‘rta, 6 ta oson quizlarni qaytaradi (subject_id bo‘yicha)"
 )
 @api_view(['GET'])
-@handle_request
 def quiz_list(request):
     subject_id = request.GET.get('subject_id')
-    difficulty = request.GET.get('difficulty')
+    if not subject_id:
+        return Response({"error": "subject_id is required"}, status=400)
 
-    quiz = Quiz.objects.all()
+    hard = list(Quiz.objects.filter(subject_id=subject_id, difficulty='hard').order_by('?')[:7])
+    medium = list(Quiz.objects.filter(subject_id=subject_id, difficulty='medium').order_by('?')[:7])
+    easy = list(Quiz.objects.filter(subject_id=subject_id, difficulty='easy').order_by('?')[:6])
 
-    if subject_id:
-        quiz = quiz.filter(subject_id=subject_id)
+    quizzes = hard + medium + easy
+    random.shuffle(quizzes)
 
-    if difficulty:
-        quiz = quiz.filter(difficulty=difficulty)
+    serializer = QuizSerializer(quizzes, many=True)
+    return Response({
+        "count": len(quizzes),
+        "results": serializer.data
+    })
 
-    quiz = quiz.order_by('?')[:20]
 
-    serializer = QuizSerializer(quiz, many=True)
-    return Response(serializer.data)
+# ========================= QUIZ RESULT =========================
+
+@swagger_auto_schema(
+    method='post',
+    operation_description="Foydalanuvchi yuborgan quiz natijalarini tekshiradi va darajasini aniqlaydi",
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'subject_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='Fan ID'),
+            'answers': openapi.Schema(
+                type=openapi.TYPE_ARRAY,
+                items=openapi.Items(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'quiz_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='Quiz ID'),
+                        'selected': openapi.Schema(type=openapi.TYPE_INTEGER, description='Tanlangan javob (1-4)')
+                    }
+                )
+            )
+        },
+        required=['subject_id', 'answers']
+    ),
+    responses={200: 'Natijalar qaytariladi'}
+)
+@api_view(['POST'])
+def quiz_result(request):
+    subject_id = request.data.get('subject_id')
+    answers = request.data.get('answers', [])
+
+    if not subject_id or not answers:
+        return Response({"error": "subject_id va answers kerak"}, status=400)
+
+    total = len(answers)
+    correct = 0
+    detailed_results = []
+
+    for item in answers:
+        try:
+            quiz = Quiz.objects.get(id=item['quiz_id'], subject_id=subject_id)
+            is_correct = (quiz.correct_answer == int(item['selected']))
+            if is_correct:
+                correct += 1
+
+            detailed_results.append({
+                "quiz_id": quiz.id,
+                "question": quiz.name,
+                "selected": item['selected'],
+                "correct_answer": quiz.correct_answer,
+                "is_correct": is_correct,
+                "difficulty": quiz.difficulty,
+            })
+        except Quiz.DoesNotExist:
+            continue
+
+    percentage = round((correct / total) * 100, 2)
+    subject_name, group_result = detect_group(subject_id, percentage)
+
+    return Response({
+        "subject_id": subject_id,
+        "subject_name": subject_name,
+        "total_questions": total,
+        "correct": correct,
+        "incorrect": total - correct,
+        "percentage": percentage,
+        "group_result": group_result,
+        "answers": detailed_results
+    })
+
+
+# ========================= DARAJA ANIQLASH FUNKSIYASI =========================
+
+def detect_group(subject_id, percentage):
+    subject_id = int(subject_id)
+    subject_map = {
+        # 1. Ingliz tili
+        1: {
+            "name": "Ingliz tili",
+            "levels": [
+                (0, 20, "Starter"),
+                (21, 40, "Beginner"),
+                (41, 60, "Elementary"),
+                (61, 75, "Pre-Intermediate"),
+                (76, 90, "Intermediate"),
+                (91, 100, "IELTS")
+            ]
+        },
+        # 2. Rus tili
+        2: {"name": "Rus tili", "levels": [(0, 40, "Boshlang‘ich"), (41, 75, "O‘rta"), (76, 100, "Yuqori (CEFR)")]} ,
+        # 3. Arab tili
+        3: {"name": "Arab tili", "levels": [(0, 40, "Boshlang‘ich"), (41, 75, "O‘rta"), (76, 100, "Yuqori (CEFR)")]} ,
+        # 4. Koreys tili
+        4: {"name": "Koreys tili", "levels": [(0, 40, "Boshlang‘ich"), (41, 75, "O‘rta"), (76, 100, "Yuqori (TOPIK)")]} ,
+        # 5. Nemis tili
+        5: {"name": "Nemis tili", "levels": [(0, 40, "Boshlang‘ich"), (41, 75, "O‘rta"), (76, 100, "Yuqori (TOEFL)")]} ,
+        # 6. Matematika
+        6: {"name": "Matematika", "levels": [(0, 40, "Boshlang‘ich"), (41, 75, "O‘rta"), (76, 100, "Yuqori (Milliy sertifikat)")]} ,
+        # 7. Kimyo
+        7: {"name": "Kimyo", "levels": [(0, 40, "Boshlang‘ich"), (41, 75, "O‘rta"), (76, 100, "Yuqori (Milliy sertifikat)")]} ,
+        # 8. Biologiya
+        8: {"name": "Biologiya", "levels": [(0, 40, "Boshlang‘ich"), (41, 75, "O‘rta"), (76, 100, "Yuqori (Milliy sertifikat)")]} ,
+        # 9. IT Dasturlash
+        9: {
+            "name": "IT Dasturlash",
+            "levels": [
+                (0, 15, "HTML"),
+                (16, 30, "CSS"),
+                (31, 45, "Media/SCSS"),
+                (46, 60, "JavaScript"),
+                (61, 80, "API"),
+                (81, 100, "Python / Node.js")
+            ]
+        }
+    }
+
+    # Agar fan mavjud bo‘lmasa — umumiy 3 darajali tizim
+    subject = subject_map.get(subject_id)
+    if not subject:
+        subject = {
+            "name": f"Nomaʼlum fan (ID {subject_id})",
+            "levels": [
+                (0, 40, "Boshlang‘ich"),
+                (41, 75, "O‘rta"),
+                (76, 100, "Yuqori (Umumiy)")
+            ]
+        }
+
+    for low, high, level in subject["levels"]:
+        if low <= percentage <= high:
+            return (subject["name"], level)
+
+    return (subject["name"], "Daraja aniqlanmadi")
+
 
 @swagger_auto_schema(
     method='get',
