@@ -14,8 +14,6 @@ from django.contrib import admin
 import nested_admin
 from .models import Course, CourseRoadMap, CourseRoadMapField
 from django.utils.html import mark_safe
-from django import forms
-from django.utils.html import mark_safe
 
 
 # ========== IMAGE PREVIEW ==========
@@ -27,91 +25,25 @@ def image_preview(obj):
 image_preview.short_description = "Rasm"
 
 
-# ---------- Qo'shma style (aniq ko'rinishi uchun) ----------
-INPUT_STYLE = {
-    "style": (
-        "border:1px solid #6b7280;"
-        "background:#0b1220;"
-        "color:#ffffff;"
-        "padding:8px 10px;"
-        "border-radius:8px;"
-        "width:100%;"
-        "box-sizing:border-box;"
-    )
-}
+# ========== INLINE CLASSLAR ==========
 
-TEXTAREA_STYLE = {
-    "style": (
-        "border:1px solid #6b7280;"
-        "background:#0b1220;"
-        "color:#ffffff;"
-        "padding:10px 12px;"
-        "border-radius:8px;"
-        "width:100%;"
-        "box-sizing:border-box;"
-    )
-}
-
-
-# ---------- Formlar (aniq label/placeholder + ko'rinadigan style) ----------
-class CourseRoadMapForm(forms.ModelForm):
-    class Meta:
-        model = CourseRoadMap
-        fields = ("name",)
-        labels = {"name": "Yo‘l xaritasi nomi"}
-        help_texts = {"name": "Masalan: Backend asoslari"}
-        widgets = {
-            "name": forms.TextInput(
-                attrs={"placeholder": "Masalan: Backend asoslari", **INPUT_STYLE}
-            )
-        }
-
-
-class CourseRoadMapFieldForm(forms.ModelForm):
-    class Meta:
-        model = CourseRoadMapField
-        fields = ("info",)
-        labels = {"info": "Tavsif (bosqich mazmuni)"}
-        help_texts = {"info": "Qisqacha mazmun: nimalar o‘rganiladi?"}
-        widgets = {
-            "info": forms.Textarea(
-                attrs={"rows": 4, "placeholder": "Masalan: Python sintaksisi, o‘zgaruvchilar, if/for...", **TEXTAREA_STYLE}
-            )
-        }
-
-
-# ---------- Nested inlines (collapse yo'q — hammasi ochiq) ----------
-class CourseRoadMapFieldInline(nested_admin.NestedStackedInline):
+class CourseRoadMapFieldInline(nested_admin.NestedTabularInline):
     model = CourseRoadMapField
-    form = CourseRoadMapFieldForm
-    extra = 0
-    can_delete = True
+    extra = 1
     verbose_name = "Yo‘l xaritasi matni"
     verbose_name_plural = "Yo‘l xaritasi matnlari"
-    fieldsets = (
-        ("Yo‘l xaritasi matnlari", {
-            "description": "Bu bo‘limda shu yo‘l xaritasining ichki bosqichlarini tavsiflab yozing.",
-            "fields": ("info",),
-        }),
-    )
 
 
-class CourseRoadMapInline(nested_admin.NestedStackedInline):
+class CourseRoadMapInline(nested_admin.NestedTabularInline):
     model = CourseRoadMap
-    form = CourseRoadMapForm
-    extra = 0
-    inlines = [CourseRoadMapFieldInline]
+    extra = 1
     verbose_name = "Yo‘l xaritasi"
     verbose_name_plural = "Yo‘l xaritalari"
-    fieldsets = (
-        ("Yo‘l xaritasi", {
-            "description": "Har bir yo‘l xaritasiga nom bering (masalan, ‘Backend asoslari’). Pastda uning bosqichlarini to‘ldirasiz.",
-            "fields": ("name",),
-        }),
-    )
+    inlines = [CourseRoadMapFieldInline]
 
 
-# ---------- Course admin ----------
+# ========== COURSE ADMIN ==========
+
 @admin.register(Course)
 class CourseAdmin(nested_admin.NestedModelAdmin, ModelAdmin):
     list_display = ("id", image_preview, "name", "duration", "created_at")
@@ -127,10 +59,10 @@ class CourseAdmin(nested_admin.NestedModelAdmin, ModelAdmin):
         }),
         ("Texnik", {
             "fields": ("created_at", "updated_at"),
-            # collapse olib tashladik — ko‘rinishi aniq bo‘lsin desangiz qoldiramiz
-            # "classes": ("collapse",)
+            "classes": ("collapse",)
         }),
     )
+
 
 # ========== QOLGAN MODELLAR ==========
 
