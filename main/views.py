@@ -6,7 +6,8 @@ from drf_yasg import openapi
 
 from .models import *
 from .serializers import *
-from .utils import handle_request, AResponse as Response
+from .bot import send_message_admin
+
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -15,7 +16,7 @@ from drf_yasg import openapi
 from .models import Quiz
 from .serializers import QuizSerializer
 import random
-
+from .utils import handle_request, AResponse as Response
 
 @swagger_auto_schema(
     method='get',
@@ -315,3 +316,90 @@ def certificate_search(request):
     return Response(serializer.data)
 
 
+
+
+@swagger_auto_schema(
+    method='post',
+    operation_description="Yangi foydalanuvchini ro'yxatdan o'tkazish, biz bilan bog'lanish yoki IELTS mock topshirish uchun universal endpoint.",
+    manual_parameters=[
+        openapi.Parameter(
+            'action', openapi.IN_PATH,
+            description="Amal turi: `register`, `contactus`, yoki `mock`",
+            type=openapi.TYPE_STRING,
+            required=True,
+            enum=['register', 'contactus', 'mock']
+        ),
+    ],
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            # register
+            'name': openapi.Schema(type=openapi.TYPE_STRING, description="Foydalanuvchi ismi"),
+            'age': openapi.Schema(type=openapi.TYPE_INTEGER, description="Yoshi (faqat `register` uchun)"),
+            'phone': openapi.Schema(type=openapi.TYPE_STRING, description="Telefon raqami (register va mock uchun)"),
+            # contactus
+            'email': openapi.Schema(type=openapi.TYPE_STRING, description="Email manzil (`contactus` uchun)"),
+            'message': openapi.Schema(type=openapi.TYPE_STRING, description="Xabar (`contactus` uchun)"),
+            # mock
+            'subject': openapi.Schema(type=openapi.TYPE_STRING, description="Fan nomi (`mock` uchun)"),
+        },
+        required=['name'],
+        example={
+            "action": "register",
+            "name": "Muxriddin",
+            "age": 25,
+            "phone": "+998901234567"
+        }
+    ),
+    responses={
+        200: openapi.Response("✅ Xabar muvaffaqiyatli yuborildi", examples={"application/json": "Amal muvaffaqiyatli bajarildi!"}),
+        404: openapi.Response("❌ Noto‘g‘ri action qiymati", examples={"application/json": {
+            "error": "Nomalum Metod\nYuborilishi kerak: \"register\", \"mock\", \"contactus\""
+        }})
+    }
+)
+@api_view(['POST'])
+@handle_request
+def send_register(request, action):
+    if action == 'register':
+        name = request.data.get('name')
+        age = request.data.get('age')
+        phone = request.data.get('phone')
+        text = f"""
+🆕Yangi <b>Ro'yxatdan O'tish!</b>
+
+👤 <b>Ismi:</b> {name}
+🎂 <b>Yoshi:</b> {age}
+📞 <b>Telefon raqami:</b> {phone}
+
+"""
+    elif action == 'contactus':
+        name = request.data.get('name')
+        email = request.data.get('email')
+        message = request.data.get('message')
+        text = f"""
+🆕Yangi <b>Bog'lanish!</b>
+
+👤 <b>Ismi:</b> {name}
+📧 <b>Email:</b> {email}
+💬 <b>Habari:</b> {message}
+
+"""
+    elif action == 'mock':
+        name = request.data.get('name')
+        phone = request.data.get('phone')
+        subject = request.data.get('subject')
+        text = f"""
+🆕Yangi <b>ILTS Mock topshirish!</b>       
+
+👤 <b>Ismi:</b> {name}
+📞 <b>Telefon raqami:</b> {phone} 
+📕 <b>Fani:</b> {subject}     
+        """
+        
+    else:
+        return Response(error='Nomalum Metod\nYuborilishi kerak: "register", "mock", "contactus"', status_code=status.HTTP_404_NOT_FOUND)
+    send_message_admin(text)
+    return Response('Amal muvaffaqiyatli bajarildi!')
+    
+    

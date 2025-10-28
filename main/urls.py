@@ -14,4 +14,6 @@ urlpatterns = [
     path('quizzes/', quiz_list),
     path('quiz-result/', quiz_result),
     path('certificates/', certificate_search),
+    
+    path('send_register/<str:action>/', send_register)
 ]

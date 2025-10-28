@@ -205,3 +205,11 @@ class Certificate(BaseModel):
         verbose_name_plural = _("Sertifikatlar")
         db_table = "certificate"
         ordering = ['-created_at']
+        
+        
+class RegisterImage(BaseModel):
+    image=models.ImageField(upload_to='register_photos/')
+
+class TelegramAdmin(BaseModel):
+    telegram_id = models.IntegerField()
+    name = models.CharField(max_length=100, null=True, blank=True)
