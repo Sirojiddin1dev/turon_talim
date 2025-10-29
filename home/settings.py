@@ -66,10 +66,13 @@ INSTALLED_APPS = [
     'drf_yasg',
     "rest_framework",
     "nested_admin",
+    'whitenoise'
+
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
