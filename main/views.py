@@ -170,7 +170,7 @@ def quiz_list(request):
 
 @swagger_auto_schema(
     method='post',
-    operation_description="Foydalanuvchi yuborgan quiz natijalarini tekshiradi va darajasini aniqlaydi",
+    operation_description="Foydalanuvchi yuborgan quiz natijalarini tekshiradi, to‘g‘ri/xato javoblarni qaytaradi va darajasini aniqlaydi",
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
@@ -181,7 +181,7 @@ def quiz_list(request):
                     type=openapi.TYPE_OBJECT,
                     properties={
                         'quiz_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='Quiz ID'),
-                        'selected': openapi.Schema(type=openapi.TYPE_INTEGER, description='Tanlangan javob (1-4)')
+                        'selected': openapi.Schema(type=openapi.TYPE_INTEGER, description='Tanlangan javob (1–4)')
                     }
                 )
             )
@@ -196,26 +196,36 @@ def quiz_result(request):
     answers = request.data.get('answers', [])
 
     if not subject_id or not answers:
-        return Response({"error": "subject_id va answers kerak"}, status_code=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": "subject_id va answers kerak"}, status=400)
 
     total = len(answers)
     correct = 0
+    wrong = 0
     detailed_results = []
 
     for item in answers:
         try:
             quiz = Quiz.objects.get(id=item['quiz_id'], subject_id=subject_id)
-            is_correct = (quiz.correct_answer == int(item['selected']))
+            selected = int(item['selected'])
+            is_correct = (quiz.correct_answer == selected)
+
             if is_correct:
                 correct += 1
+            else:
+                wrong += 1
 
             detailed_results.append({
                 "quiz_id": quiz.id,
                 "question": quiz.name,
-                "selected": item['selected'],
+                "selected": selected,
                 "correct_answer": quiz.correct_answer,
                 "is_correct": is_correct,
-                "difficulty": quiz.difficulty,
+                "answers": {
+                    "1": quiz.answer1,
+                    "2": quiz.answer2,
+                    "3": quiz.answer3,
+                    "4": quiz.answer4,
+                }
             })
         except Quiz.DoesNotExist:
             continue
@@ -228,10 +238,10 @@ def quiz_result(request):
         "subject_name": subject_name,
         "total_questions": total,
         "correct": correct,
-        "incorrect": total - correct,
+        "wrong": wrong,
         "percentage": percentage,
         "group_result": group_result,
-        "answers": detailed_results
+        "results": detailed_results
     })
 
 
