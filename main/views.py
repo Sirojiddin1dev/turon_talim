@@ -196,7 +196,7 @@ def quiz_result(request):
     answers = request.data.get('answers', [])
 
     if not subject_id or not answers:
-        return Response({"error": "subject_id va answers kerak"}, status=400)
+        return Response({"error": "subject_id va answers kerak"}, status_code=400)
 
     total = len(answers)
     correct = 0
