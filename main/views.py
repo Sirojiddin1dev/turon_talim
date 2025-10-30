@@ -170,11 +170,12 @@ def quiz_list(request):
 
 @swagger_auto_schema(
     method='post',
-    operation_description="Foydalanuvchi yuborgan quiz natijalarini tekshiradi, to‘g‘ri/xato javoblarni qaytaradi va darajasini aniqlaydi",
+    operation_description="Quiz natijalarini tekshiradi va tildan kelib chiqib savollarni qaytaradi",
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
             'subject_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='Fan ID'),
+            'lang': openapi.Schema(type=openapi.TYPE_STRING, description="Til (uz, ru, en)", default="uz"),
             'answers': openapi.Schema(
                 type=openapi.TYPE_ARRAY,
                 items=openapi.Items(
@@ -194,9 +195,13 @@ def quiz_list(request):
 def quiz_result(request):
     subject_id = request.data.get('subject_id')
     answers = request.data.get('answers', [])
+    lang = request.data.get('lang', 'uz')
+
+    if lang not in ['uz', 'ru', 'en']:
+        lang = 'uz'
 
     if not subject_id or not answers:
-        return Response({"error": "subject_id va answers kerak"}, status_code=400)
+        return Response({"error": "subject_id va answers kerak"}, status=400)
 
     total = len(answers)
     correct = 0
@@ -214,18 +219,17 @@ def quiz_result(request):
             else:
                 wrong += 1
 
+            # Dinamik tilga mos field nomlari
+            name_field = f"name_{lang}"
+            answer_fields = {str(i): getattr(quiz, f"answer{i}_{lang}") for i in range(1, 5)}
+
             detailed_results.append({
                 "quiz_id": quiz.id,
-                "question": quiz.name,
+                "question": getattr(quiz, name_field),
                 "selected": selected,
                 "correct_answer": quiz.correct_answer,
                 "is_correct": is_correct,
-                "answers": {
-                    "1": quiz.answer1,
-                    "2": quiz.answer2,
-                    "3": quiz.answer3,
-                    "4": quiz.answer4,
-                }
+                "answers": answer_fields
             })
         except Quiz.DoesNotExist:
             continue
@@ -241,8 +245,10 @@ def quiz_result(request):
         "wrong": wrong,
         "percentage": percentage,
         "group_result": group_result,
+        "language": lang,
         "results": detailed_results
     })
+
 
 
 # ========================= DARAJA ANIQLASH FUNKSIYASI =========================
@@ -449,3 +455,11 @@ def send_register(request, action):
     return Response('Amal muvaffaqiyatli bajarildi!')
     
     
+    
+
+@api_view(['GET'])
+@handle_request
+def test_view(request):
+    t = TestModel.objects.all()
+    ser = TestSerializer(t, many=True)
+    return Response(ser.data)

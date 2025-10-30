@@ -16,5 +16,7 @@ urlpatterns = [
     path('certificates/', certificate_search),
     path('register-images/', register_images),
     
-    path('send_register/<str:action>/', send_register)
+    path('send_register/<str:action>/', send_register),
+    
+    path('test/', test_view)
 ]

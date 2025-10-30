@@ -2,6 +2,33 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
+def tr_fields(field_type, *args, **kwargs):
+    """
+    Ko‘p tilli fieldlarni yaratadi (UZ, RU, EN) va har biriga mos verbose_name beradi.
+    
+    Misol:
+        locals().update(tr_fields(models.CharField, max_length=255, name='title', verbose_name='Sarlavha'))
+    """
+    LANGS = {
+        'uz': '🇺🇿 (Oʻzbekcha)',
+        'ru': '🇷🇺 (Русский)',
+        'en': '🇬🇧 (English)'
+    }
+    fields = {}
+
+    base_verbose = kwargs.pop('verbose_name', kwargs.get('name', 'Field'))
+
+    for lang, lang_label in LANGS.items():
+        fields[f"{kwargs.get('name')}_{lang}"] = field_type(
+            *args,
+            verbose_name=f"{base_verbose} {lang_label}",
+            **{k: v for k, v in kwargs.items() if k != 'name'}
+        )
+
+    return fields
+
+
+
 class BaseModel(models.Model):
     created_at = models.DateTimeField(_('Yaratilgan vaqti'), auto_now_add=True)
     updated_at = models.DateTimeField(_('Yangilangan vaqti'), auto_now=True)
@@ -15,12 +42,12 @@ class BaseModel(models.Model):
 
 
 class Banner(BaseModel):
-    title = models.CharField(_('Sarlavha'), max_length=150)
-    description = models.CharField(_('Izoh'), max_length=200)
+    locals().update(tr_fields(models.CharField, name='title', max_length=150, verbose_name=_('Sarlavha')))
+    locals().update(tr_fields(models.CharField, name='description', max_length=200, verbose_name=_('Izoh')))
     image = models.ImageField(_('Rasm'), upload_to='banner_photos/')
 
     def __str__(self):
-        return self.title
+        return self.title_uz
 
     class Meta:
         verbose_name = _("Banner")
@@ -47,7 +74,7 @@ class SocialMediaLink(BaseModel):
     instagram = models.URLField(_('Instagram'))
     youtube = models.URLField(_('YouTube'))
     facebook = models.URLField(_('Facebook'))
-    location = models.CharField(_('Manzil'), max_length=100)
+    locals().update(tr_fields(models.CharField, name='location', max_length=100, verbose_name=_('Manzil')))
 
     class Meta:
         verbose_name = _("Ijtimoiy tarmoq")
@@ -57,11 +84,11 @@ class SocialMediaLink(BaseModel):
 
 
 class CourseRoadMapField(BaseModel):
-    info = models.TextField(_('Tavsif'))
-    road_maop = models.ForeignKey(to='CourseRoadMap', related_name='course_road_map', on_delete=models.CASCADE)
+    locals().update(tr_fields(models.TextField, name='info', verbose_name=_('Tavsif')))
+    road_map = models.ForeignKey(to='CourseRoadMap', related_name='info', on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.info
+        return self.info_uz
 
     class Meta:
         verbose_name = _("Yo‘l xaritasi matni")
@@ -71,11 +98,11 @@ class CourseRoadMapField(BaseModel):
 
 
 class CourseRoadMap(BaseModel):
-    name = models.CharField(_('Nomi'), max_length=50)
-    course = models.ForeignKey(to='Course', related_name='course', on_delete=models.CASCADE)
+    locals().update(tr_fields(models.CharField, max_length=50, name='name', verbose_name=_('Nomi')))
+    course = models.ForeignKey(to='Course', related_name='roadmap', on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return self.name_uz
 
     class Meta:
         verbose_name = _("Yo‘l xaritasi")
@@ -86,12 +113,12 @@ class CourseRoadMap(BaseModel):
 
 class Course(BaseModel):
     image = models.ImageField(_('Rasm'), upload_to='course_photos/')
-    name = models.CharField(_('Kurs nomi'), max_length=50)
-    description = models.TextField(_('Tavsif'))
+    locals().update(tr_fields(models.CharField, max_length=50, name='name', verbose_name=_('Kurs nomi')))
+    locals().update(tr_fields(models.TextField, name='description', verbose_name=_('Tavsif')))
     duration = models.IntegerField(_('Davomiyligi (oy)'))
 
     def __str__(self):
-        return self.name
+        return self.name_uz
 
     class Meta:
         verbose_name = _("Kurs")
@@ -102,16 +129,17 @@ class Course(BaseModel):
 
 class Teacher(BaseModel):
     image = models.ImageField(_('Rasm'), upload_to='teacher_photos/')
-    full_name = models.CharField(_('F.I.Sh'), max_length=100)
-    subject = models.CharField(_('Fan'), max_length=50)
-    about = models.TextField(_('O‘qituvchi haqida'))
+    locals().update(tr_fields(models.CharField, max_length=100, name='full_name', verbose_name=_('F.I.Sh')))
+    locals().update(tr_fields(models.CharField, max_length=50, name='subject', verbose_name=_('Fan')))
+    locals().update(tr_fields(models.TextField, name='about', verbose_name=_('O‘qituvchi haqida')))
+
     instagram = models.URLField(_('Instagram'))
     telegram = models.URLField(_('Telegram'))
     facebook = models.URLField(_('Facebook'))
     video = models.URLField(_('Video havola'))
 
     def __str__(self):
-        return self.full_name
+        return self.full_name_uz
 
     class Meta:
         verbose_name = _("O‘qituvchi")
@@ -152,14 +180,15 @@ class ContactUs(BaseModel):
 
 
 class Branch(BaseModel):
-    name = models.CharField(_('Filial nomi'), max_length=100)
-    about = models.TextField(_('Tavsif'))
+    locals().update(tr_fields(models.CharField, max_length=100, name='name', verbose_name=_('Filial nomi')))
+    locals().update(tr_fields(models.TextField, name='about', verbose_name=_('Tavsif')))
+
     image = models.ImageField(_('Rasm'), upload_to='branch_photos/')
     lat = models.CharField(_('Latitude'), max_length=255)
     lot = models.CharField(_('Longitude'), max_length=255)
 
     def __str__(self):
-        return self.name
+        return self.name_uz
 
     class Meta:
         verbose_name = _("Filial")
@@ -169,11 +198,11 @@ class Branch(BaseModel):
 
 
 class Subject(BaseModel):
-    name = models.CharField(_('Fan nomi'), max_length=50)
+    locals().update(tr_fields(models.CharField, max_length=50, name='name', verbose_name=_('Fan nomi')))
     image = models.ImageField(_('Rasm'), upload_to="Subject_photos")
 
     def __str__(self):
-        return self.name
+        return self.name_uz
 
     class Meta:
         verbose_name = _("Fan")
@@ -189,11 +218,12 @@ class Quiz(BaseModel):
         ("hard", "Qiyin"),
     )
 
-    name = models.CharField(_('Savol'), max_length=100)
-    answer1 = models.CharField(_('Variant 1'), max_length=50)
-    answer2 = models.CharField(_('Variant 2'), max_length=50)
-    answer3 = models.CharField(_('Variant 3'), max_length=50)
-    answer4 = models.CharField(_('Variant 4'), max_length=50)
+    # === 3 TILDA MAYDONLAR ===
+    locals().update(tr_fields(models.CharField, max_length=100, name='name', verbose_name=_('Savol')))
+    locals().update(tr_fields(models.CharField, max_length=50, name='answer1', verbose_name=_('Variant 1')))
+    locals().update(tr_fields(models.CharField, max_length=50, name='answer2', verbose_name=_('Variant 2')))
+    locals().update(tr_fields(models.CharField, max_length=50, name='answer3', verbose_name=_('Variant 3')))
+    locals().update(tr_fields(models.CharField, max_length=50, name='answer4', verbose_name=_('Variant 4')))
 
     ANSWER = (
         (1, "Variant 1"),
@@ -203,7 +233,7 @@ class Quiz(BaseModel):
     )
 
     correct_answer = models.IntegerField(_('To‘g‘ri javob'), choices=ANSWER)
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, verbose_name=_("Fan"))
+    subject = models.ForeignKey('Subject', on_delete=models.CASCADE, verbose_name=_("Fan"))
 
     difficulty = models.CharField(
         _('Qiyinchilik darajasi'),
@@ -213,7 +243,8 @@ class Quiz(BaseModel):
     )
 
     def __str__(self):
-        return self.name
+        # Default til sifatida o‘zbekcha nomni qaytaradi
+        return self.name_uz
 
     class Meta:
         verbose_name = _("Test")
@@ -224,12 +255,13 @@ class Quiz(BaseModel):
 
 class Certificate(BaseModel):
     image = models.ImageField(_('Rasm'), upload_to='Certificate_photos/')
-    full_name = models.CharField(_('F.I.Sh'), max_length=100)
+    locals().update(tr_fields(models.CharField, max_length=100, name='full_name', verbose_name=_('F.I.Sh')))
+
     level = models.CharField(_('Daraja'), max_length=100)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, verbose_name=_("Fan"))
 
     def __str__(self):
-        return self.full_name
+        return self.full_name_uz
 
     class Meta:
         verbose_name = _("Sertifikat")
@@ -245,3 +277,16 @@ class RegisterImage(BaseModel):
 class TelegramAdmin(BaseModel):
     telegram_id = models.IntegerField()
     name = models.CharField(max_length=100, null=True, blank=True)
+    
+
+
+class TestModel(models.Model):
+    locals().update(tr_fields(models.CharField, max_length=255, name='title'))
+    locals().update(tr_fields(models.CharField, max_length=255, name='name'))
+    locals().update(tr_fields(models.TextField, name='info'))
+
+    def get_lang(self, field, lang='uz'):
+        return getattr(self, f"{field}_{lang}", None)
+
+    def __str__(self):
+        return self.title_uz
