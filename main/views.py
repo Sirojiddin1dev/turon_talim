@@ -196,7 +196,7 @@ def quiz_result(request):
     answers = request.data.get('answers', [])
 
     if not subject_id or not answers:
-        return Response({"error": "subject_id va answers kerak"}, status=400)
+        return Response({"error": "subject_id va answers kerak"}, status_code=status.HTTP_400_BAD_REQUEST)
 
     total = len(answers)
     correct = 0
@@ -311,7 +311,10 @@ def detect_group(subject_id, percentage):
 @handle_request
 def certificate_search(request):
     subject_id = request.GET.get('subject_id', '')
-    cert = Certificate.objects.filter(subject=subject_id)
+    if subject_id:
+        cert = Certificate.objects.filter(subject=subject_id)
+    else:
+        cert = Certificate.objects.all()
     serializer = CertificateSerializer(cert, many=True)
     return Response(serializer.data)
 
