@@ -1,7 +1,7 @@
 import telebot
 from .models import TelegramAdmin
 
-TOKEN = "5678987654678:ddcgfgdgffdgdfgdfgfdg"
+TOKEN = "8371298483:AAFhtW9FQZdXAYNjbuHpVgL1RrbB-6mQ_NQ"
 
 bot = telebot.TeleBot(TOKEN)
 
