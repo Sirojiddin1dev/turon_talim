@@ -329,6 +329,39 @@ def certificate_search(request):
     return Response(serializer.data)
 
 
+@swagger_auto_schema(
+    method='get',
+    operation_description="So‘nggi 5 ta ro‘yxatdan o‘tish rasmlarini qaytaradi. Rasm ma'lumotlari `RegisterImageSerializer` orqali seriyalanadi.",
+    responses={
+        200: openapi.Response(
+            description="So‘nggi 5 ta rasm muvaffaqiyatli qaytarildi",
+            examples={
+                "application/json": [
+                    {
+                        "id": 12,
+                        "image": "https://example.com/media/register/img1.jpg",
+                        "title": "Ro‘yxatdan o‘tish banner 1",
+                        "created_at": "2025-10-28T17:30:12Z"
+                    },
+                    {
+                        "id": 11,
+                        "image": "https://example.com/media/register/img2.jpg",
+                        "title": "Ro‘yxatdan o‘tish banner 2",
+                        "created_at": "2025-10-27T20:12:44Z"
+                    }
+                ]
+            }
+        ),
+        500: openapi.Response(description="Server xatosi")
+    }
+)
+@api_view(['GET'])
+@handle_request
+def register_images(request):
+    images = RegisterImage.objects.all().order_by('-id')[:5]
+    ser = RegisterImageSerializer(images, many=True)
+    return Response(ser.data)
+
 
 
 @swagger_auto_schema(

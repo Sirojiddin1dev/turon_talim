@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import (
     Banner, HomeStats, SocialMediaLink, CourseRoadMapField, CourseRoadMap,
-    Course, Teacher, About, ContactUs, Branch, Subject, Quiz, Certificate
+    Course, Teacher, About, ContactUs, Branch, Subject, Quiz, Certificate, RegisterImage
 )
 
 class BannerSerializer(serializers.ModelSerializer):
@@ -83,4 +83,10 @@ class QuizSerializer(serializers.ModelSerializer):
 class CertificateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Certificate
+        fields = "__all__"
+        
+        
+class RegisterImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RegisterImage
         fields = "__all__"
