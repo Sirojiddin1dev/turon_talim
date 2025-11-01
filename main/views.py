@@ -144,14 +144,16 @@ def subject_list(request):
         openapi.Parameter('subject_id', openapi.IN_QUERY, description="Fan ID", type=openapi.TYPE_INTEGER),
     ],
     responses={200: QuizSerializer(many=True)},
-    operation_description="Random 7 ta qiyin, 7 ta o‘rta, 6 ta oson quizlarni qaytaradi (subject_id bo‘yicha)"
+    operation_description="Fan bo‘yicha 7 ta qiyin, 7 ta o‘rta, 6 ta oson testni random tartibda qaytaradi"
 )
 @api_view(['GET'])
+@handle_request
 def quiz_list(request):
     subject_id = request.GET.get('subject_id')
     if not subject_id:
-        return Response({"error": "subject_id is required"}, status=400)
+        return Response({"error": "subject_id kerak"}, status=400)
 
+    # 7 ta qiyin, 7 ta o‘rta, 6 ta oson random quiz
     hard = list(Quiz.objects.filter(subject_id=subject_id, difficulty='hard').order_by('?')[:7])
     medium = list(Quiz.objects.filter(subject_id=subject_id, difficulty='medium').order_by('?')[:7])
     easy = list(Quiz.objects.filter(subject_id=subject_id, difficulty='easy').order_by('?')[:6])
