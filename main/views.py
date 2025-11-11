@@ -153,19 +153,15 @@ def quiz_list(request):
     if not subject_id:
         return Response({"error": "subject_id kerak"}, status=400)
 
-    # 7 ta qiyin, 7 ta o‘rta, 6 ta oson random quiz
-    hard = list(Quiz.objects.filter(subject_id=subject_id, difficulty='hard').order_by('?')[:7])
-    medium = list(Quiz.objects.filter(subject_id=subject_id, difficulty='medium').order_by('?')[:7])
-    easy = list(Quiz.objects.filter(subject_id=subject_id, difficulty='easy').order_by('?')[:6])
-
-    quizzes = hard + medium + easy
-    random.shuffle(quizzes)
+    # subject_id bo‘yicha 30 ta random quiz tanlaymiz
+    quizzes = list(Quiz.objects.filter(subject_id=subject_id).order_by('?')[:30])
 
     serializer = QuizSerializer(quizzes, many=True)
     return Response({
         "count": len(quizzes),
         "results": serializer.data
     })
+
 
 
 # ========================= QUIZ RESULT =========================
