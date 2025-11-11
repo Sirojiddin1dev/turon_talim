@@ -188,7 +188,7 @@ class CertificateAdmin(ModelAdmin):
 
 @admin.register(RegisterImage)
 class RegisterImageAdmin(ModelAdmin):
-    list_display = ('image', 'created_at')
+    list_display = ('id', 'image', 'created_at')
     fields = ('image',)
     readonly_fields = ('created_at', 'updated_at')
 

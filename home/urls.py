@@ -11,9 +11,9 @@ from drf_yasg import openapi
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Banner API",
-        default_version='v1',
-        description="TurboDRF asosida yaratilgan Banner API hujjatlari",
+        title="Turon Talim API",
+        default_version='v1.32',
+        description="Chatgpt bergan kodlar asosida api chiqarilgan",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="info@mysite.uz"),
         license=openapi.License(name="MIT License"),
@@ -35,4 +35,5 @@ urlpatterns = [
 
 # Media fayllar uchun
 if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

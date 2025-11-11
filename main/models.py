@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
+import os
+from PIL import Image
 
 def tr_fields(field_type, *args, **kwargs):
     """
@@ -48,6 +49,29 @@ class Banner(BaseModel):
 
     def __str__(self):
         return self.title_uz
+
+    def save(self, *args, **kwargs):
+        # Avval rasmni oddiy saqlaymiz
+        super().save(*args, **kwargs)
+
+        # Fayl manzili
+        img_path = self.image.path
+        base, ext = os.path.splitext(img_path)
+        webp_path = base + ".webp"
+
+        try:
+            # Rasmni ochish va WebP formatga o‘tkazish
+            img = Image.open(img_path).convert("RGB")
+            img.save(webp_path, "webp", quality=85)
+
+            # Eski faylni o‘chirib, yangisini `image` sifatida saqlaymiz
+            os.remove(img_path)
+            self.image.name = self.image.name.replace(ext, ".webp")
+
+            # O‘zgartirilgan fayl nomini saqlaymiz
+            super().save(update_fields=["image"])
+        except Exception as e:
+            print("❌ Rasmni WebP ga o‘tkazishda xatolik:", e)
 
     class Meta:
         verbose_name = _("Banner")
@@ -120,6 +144,29 @@ class Course(BaseModel):
     def __str__(self):
         return self.name_uz
 
+    def save(self, *args, **kwargs):
+        # Avval rasmni oddiy saqlaymiz
+        super().save(*args, **kwargs)
+
+        # Fayl manzili
+        img_path = self.image.path
+        base, ext = os.path.splitext(img_path)
+        webp_path = base + ".webp"
+
+        try:
+            # Rasmni ochish va WebP formatga o‘tkazish
+            img = Image.open(img_path).convert("RGB")
+            img.save(webp_path, "webp", quality=85)
+
+            # Eski faylni o‘chirib, yangisini `image` sifatida saqlaymiz
+            os.remove(img_path)
+            self.image.name = self.image.name.replace(ext, ".webp")
+
+            # O‘zgartirilgan fayl nomini saqlaymiz
+            super().save(update_fields=["image"])
+        except Exception as e:
+            print("❌ Rasmni WebP ga o‘tkazishda xatolik:", e)
+
     class Meta:
         verbose_name = _("Kurs")
         verbose_name_plural = _("Kurslar")
@@ -141,6 +188,29 @@ class Teacher(BaseModel):
     def __str__(self):
         return self.full_name_uz
 
+    def save(self, *args, **kwargs):
+        # Avval rasmni oddiy saqlaymiz
+        super().save(*args, **kwargs)
+
+        # Fayl manzili
+        img_path = self.image.path
+        base, ext = os.path.splitext(img_path)
+        webp_path = base + ".webp"
+
+        try:
+            # Rasmni ochish va WebP formatga o‘tkazish
+            img = Image.open(img_path).convert("RGB")
+            img.save(webp_path, "webp", quality=85)
+
+            # Eski faylni o‘chirib, yangisini `image` sifatida saqlaymiz
+            os.remove(img_path)
+            self.image.name = self.image.name.replace(ext, ".webp")
+
+            # O‘zgartirilgan fayl nomini saqlaymiz
+            super().save(update_fields=["image"])
+        except Exception as e:
+            print("❌ Rasmni WebP ga o‘tkazishda xatolik:", e)
+
     class Meta:
         verbose_name = _("O‘qituvchi")
         verbose_name_plural = _("O‘qituvchilar")
@@ -156,6 +226,29 @@ class About(BaseModel):
     image = models.ImageField(_('Rasm'), upload_to='about_photos/')
     lat = models.CharField(_('Latitude'), max_length=255)
     lot = models.CharField(_('Longitude'), max_length=255)
+
+    def save(self, *args, **kwargs):
+        # Avval rasmni oddiy saqlaymiz
+        super().save(*args, **kwargs)
+
+        # Fayl manzili
+        img_path = self.image.path
+        base, ext = os.path.splitext(img_path)
+        webp_path = base + ".webp"
+
+        try:
+            # Rasmni ochish va WebP formatga o‘tkazish
+            img = Image.open(img_path).convert("RGB")
+            img.save(webp_path, "webp", quality=85)
+
+            # Eski faylni o‘chirib, yangisini `image` sifatida saqlaymiz
+            os.remove(img_path)
+            self.image.name = self.image.name.replace(ext, ".webp")
+
+            # O‘zgartirilgan fayl nomini saqlaymiz
+            super().save(update_fields=["image"])
+        except Exception as e:
+            print("❌ Rasmni WebP ga o‘tkazishda xatolik:", e)
 
     class Meta:
         verbose_name = _("Biz haqimizda")
@@ -190,6 +283,29 @@ class Branch(BaseModel):
     def __str__(self):
         return self.name_uz
 
+    def save(self, *args, **kwargs):
+        # Avval rasmni oddiy saqlaymiz
+        super().save(*args, **kwargs)
+
+        # Fayl manzili
+        img_path = self.image.path
+        base, ext = os.path.splitext(img_path)
+        webp_path = base + ".webp"
+
+        try:
+            # Rasmni ochish va WebP formatga o‘tkazish
+            img = Image.open(img_path).convert("RGB")
+            img.save(webp_path, "webp", quality=85)
+
+            # Eski faylni o‘chirib, yangisini `image` sifatida saqlaymiz
+            os.remove(img_path)
+            self.image.name = self.image.name.replace(ext, ".webp")
+
+            # O‘zgartirilgan fayl nomini saqlaymiz
+            super().save(update_fields=["image"])
+        except Exception as e:
+            print("❌ Rasmni WebP ga o‘tkazishda xatolik:", e)
+
     class Meta:
         verbose_name = _("Filial")
         verbose_name_plural = _("Filiallar")
@@ -203,6 +319,29 @@ class Subject(BaseModel):
 
     def __str__(self):
         return self.name_uz
+
+    def save(self, *args, **kwargs):
+        # Avval rasmni oddiy saqlaymiz
+        super().save(*args, **kwargs)
+
+        # Fayl manzili
+        img_path = self.image.path
+        base, ext = os.path.splitext(img_path)
+        webp_path = base + ".webp"
+
+        try:
+            # Rasmni ochish va WebP formatga o‘tkazish
+            img = Image.open(img_path).convert("RGB")
+            img.save(webp_path, "webp", quality=85)
+
+            # Eski faylni o‘chirib, yangisini `image` sifatida saqlaymiz
+            os.remove(img_path)
+            self.image.name = self.image.name.replace(ext, ".webp")
+
+            # O‘zgartirilgan fayl nomini saqlaymiz
+            super().save(update_fields=["image"])
+        except Exception as e:
+            print("❌ Rasmni WebP ga o‘tkazishda xatolik:", e)
 
     class Meta:
         verbose_name = _("Fan")
@@ -263,6 +402,29 @@ class Certificate(BaseModel):
     def __str__(self):
         return self.full_name_uz
 
+    def save(self, *args, **kwargs):
+        # Avval rasmni oddiy saqlaymiz
+        super().save(*args, **kwargs)
+
+        # Fayl manzili
+        img_path = self.image.path
+        base, ext = os.path.splitext(img_path)
+        webp_path = base + ".webp"
+
+        try:
+            # Rasmni ochish va WebP formatga o‘tkazish
+            img = Image.open(img_path).convert("RGB")
+            img.save(webp_path, "webp", quality=85)
+
+            # Eski faylni o‘chirib, yangisini `image` sifatida saqlaymiz
+            os.remove(img_path)
+            self.image.name = self.image.name.replace(ext, ".webp")
+
+            # O‘zgartirilgan fayl nomini saqlaymiz
+            super().save(update_fields=["image"])
+        except Exception as e:
+            print("❌ Rasmni WebP ga o‘tkazishda xatolik:", e)
+
     class Meta:
         verbose_name = _("Sertifikat")
         verbose_name_plural = _("Sertifikatlar")
@@ -272,6 +434,29 @@ class Certificate(BaseModel):
         
 class RegisterImage(BaseModel):
     image = models.ImageField(upload_to='register_photos/')
+
+    def save(self, *args, **kwargs):
+        # Avval rasmni oddiy saqlaymiz
+        super().save(*args, **kwargs)
+
+        # Fayl manzili
+        img_path = self.image.path
+        base, ext = os.path.splitext(img_path)
+        webp_path = base + ".webp"
+
+        try:
+            # Rasmni ochish va WebP formatga o‘tkazish
+            img = Image.open(img_path).convert("RGB")
+            img.save(webp_path, "webp", quality=85)
+
+            # Eski faylni o‘chirib, yangisini `image` sifatida saqlaymiz
+            os.remove(img_path)
+            self.image.name = self.image.name.replace(ext, ".webp")
+
+            # O‘zgartirilgan fayl nomini saqlaymiz
+            super().save(update_fields=["image"])
+        except Exception as e:
+            print("❌ Rasmni WebP ga o‘tkazishda xatolik:", e)
 
 
 class TelegramAdmin(BaseModel):
