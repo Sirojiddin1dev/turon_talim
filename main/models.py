@@ -51,25 +51,33 @@ class Banner(BaseModel):
         return self.title_uz
 
     def save(self, *args, **kwargs):
-        # Avval rasmni oddiy saqlaymiz
+        # Avval rasmni odatiy saqlaymiz
         super().save(*args, **kwargs)
 
-        # Fayl manzili
+        if not self.image:
+            return  # Agar rasm bo'lmasa, hech narsa qilmaymiz
+
         img_path = self.image.path
         base, ext = os.path.splitext(img_path)
         webp_path = base + ".webp"
+
+        # Agar fayl allaqachon WebP bo'lsa, o'tkazmaymiz
+        if ext.lower() == ".webp":
+            return
 
         try:
             # Rasmni ochish va WebP formatga o‘tkazish
             img = Image.open(img_path).convert("RGB")
             img.save(webp_path, "webp", quality=85)
 
-            # Eski faylni o‘chirib, yangisini `image` sifatida saqlaymiz
-            os.remove(img_path)
-            self.image.name = self.image.name.replace(ext, ".webp")
-
-            # O‘zgartirilgan fayl nomini saqlaymiz
+            # Fayl nomini yangilaymiz
+            self.image.name = self.image.name.rsplit(".", 1)[0] + ".webp"
             super().save(update_fields=["image"])
+
+            # Eski faylni o‘chirib tashlaymiz
+            if os.path.exists(img_path):
+                os.remove(img_path)
+
         except Exception as e:
             print("❌ Rasmni WebP ga o‘tkazishda xatolik:", e)
 
@@ -145,28 +153,35 @@ class Course(BaseModel):
         return self.name_uz
 
     def save(self, *args, **kwargs):
-        # Avval rasmni oddiy saqlaymiz
+        # Avval rasmni odatiy saqlaymiz
         super().save(*args, **kwargs)
 
-        # Fayl manzili
+        if not self.image:
+            return  # Agar rasm bo'lmasa, hech narsa qilmaymiz
+
         img_path = self.image.path
         base, ext = os.path.splitext(img_path)
         webp_path = base + ".webp"
+
+        # Agar fayl allaqachon WebP bo'lsa, o'tkazmaymiz
+        if ext.lower() == ".webp":
+            return
 
         try:
             # Rasmni ochish va WebP formatga o‘tkazish
             img = Image.open(img_path).convert("RGB")
             img.save(webp_path, "webp", quality=85)
 
-            # Eski faylni o‘chirib, yangisini `image` sifatida saqlaymiz
-            os.remove(img_path)
-            self.image.name = self.image.name.replace(ext, ".webp")
-
-            # O‘zgartirilgan fayl nomini saqlaymiz
+            # Fayl nomini yangilaymiz
+            self.image.name = self.image.name.rsplit(".", 1)[0] + ".webp"
             super().save(update_fields=["image"])
+
+            # Eski faylni o‘chirib tashlaymiz
+            if os.path.exists(img_path):
+                os.remove(img_path)
+
         except Exception as e:
             print("❌ Rasmni WebP ga o‘tkazishda xatolik:", e)
-
     class Meta:
         verbose_name = _("Kurs")
         verbose_name_plural = _("Kurslar")
@@ -189,25 +204,33 @@ class Teacher(BaseModel):
         return self.full_name_uz
 
     def save(self, *args, **kwargs):
-        # Avval rasmni oddiy saqlaymiz
+        # Avval rasmni odatiy saqlaymiz
         super().save(*args, **kwargs)
 
-        # Fayl manzili
+        if not self.image:
+            return  # Agar rasm bo'lmasa, hech narsa qilmaymiz
+
         img_path = self.image.path
         base, ext = os.path.splitext(img_path)
         webp_path = base + ".webp"
+
+        # Agar fayl allaqachon WebP bo'lsa, o'tkazmaymiz
+        if ext.lower() == ".webp":
+            return
 
         try:
             # Rasmni ochish va WebP formatga o‘tkazish
             img = Image.open(img_path).convert("RGB")
             img.save(webp_path, "webp", quality=85)
 
-            # Eski faylni o‘chirib, yangisini `image` sifatida saqlaymiz
-            os.remove(img_path)
-            self.image.name = self.image.name.replace(ext, ".webp")
-
-            # O‘zgartirilgan fayl nomini saqlaymiz
+            # Fayl nomini yangilaymiz
+            self.image.name = self.image.name.rsplit(".", 1)[0] + ".webp"
             super().save(update_fields=["image"])
+
+            # Eski faylni o‘chirib tashlaymiz
+            if os.path.exists(img_path):
+                os.remove(img_path)
+
         except Exception as e:
             print("❌ Rasmni WebP ga o‘tkazishda xatolik:", e)
 
@@ -228,25 +251,33 @@ class About(BaseModel):
     lot = models.CharField(_('Longitude'), max_length=255)
 
     def save(self, *args, **kwargs):
-        # Avval rasmni oddiy saqlaymiz
+        # Avval rasmni odatiy saqlaymiz
         super().save(*args, **kwargs)
 
-        # Fayl manzili
+        if not self.image:
+            return  # Agar rasm bo'lmasa, hech narsa qilmaymiz
+
         img_path = self.image.path
         base, ext = os.path.splitext(img_path)
         webp_path = base + ".webp"
+
+        # Agar fayl allaqachon WebP bo'lsa, o'tkazmaymiz
+        if ext.lower() == ".webp":
+            return
 
         try:
             # Rasmni ochish va WebP formatga o‘tkazish
             img = Image.open(img_path).convert("RGB")
             img.save(webp_path, "webp", quality=85)
 
-            # Eski faylni o‘chirib, yangisini `image` sifatida saqlaymiz
-            os.remove(img_path)
-            self.image.name = self.image.name.replace(ext, ".webp")
-
-            # O‘zgartirilgan fayl nomini saqlaymiz
+            # Fayl nomini yangilaymiz
+            self.image.name = self.image.name.rsplit(".", 1)[0] + ".webp"
             super().save(update_fields=["image"])
+
+            # Eski faylni o‘chirib tashlaymiz
+            if os.path.exists(img_path):
+                os.remove(img_path)
+
         except Exception as e:
             print("❌ Rasmni WebP ga o‘tkazishda xatolik:", e)
 
@@ -284,25 +315,33 @@ class Branch(BaseModel):
         return self.name_uz
 
     def save(self, *args, **kwargs):
-        # Avval rasmni oddiy saqlaymiz
+        # Avval rasmni odatiy saqlaymiz
         super().save(*args, **kwargs)
 
-        # Fayl manzili
+        if not self.image:
+            return  # Agar rasm bo'lmasa, hech narsa qilmaymiz
+
         img_path = self.image.path
         base, ext = os.path.splitext(img_path)
         webp_path = base + ".webp"
+
+        # Agar fayl allaqachon WebP bo'lsa, o'tkazmaymiz
+        if ext.lower() == ".webp":
+            return
 
         try:
             # Rasmni ochish va WebP formatga o‘tkazish
             img = Image.open(img_path).convert("RGB")
             img.save(webp_path, "webp", quality=85)
 
-            # Eski faylni o‘chirib, yangisini `image` sifatida saqlaymiz
-            os.remove(img_path)
-            self.image.name = self.image.name.replace(ext, ".webp")
-
-            # O‘zgartirilgan fayl nomini saqlaymiz
+            # Fayl nomini yangilaymiz
+            self.image.name = self.image.name.rsplit(".", 1)[0] + ".webp"
             super().save(update_fields=["image"])
+
+            # Eski faylni o‘chirib tashlaymiz
+            if os.path.exists(img_path):
+                os.remove(img_path)
+
         except Exception as e:
             print("❌ Rasmni WebP ga o‘tkazishda xatolik:", e)
 
@@ -321,25 +360,33 @@ class Subject(BaseModel):
         return self.name_uz
 
     def save(self, *args, **kwargs):
-        # Avval rasmni oddiy saqlaymiz
+        # Avval rasmni odatiy saqlaymiz
         super().save(*args, **kwargs)
 
-        # Fayl manzili
+        if not self.image:
+            return  # Agar rasm bo'lmasa, hech narsa qilmaymiz
+
         img_path = self.image.path
         base, ext = os.path.splitext(img_path)
         webp_path = base + ".webp"
+
+        # Agar fayl allaqachon WebP bo'lsa, o'tkazmaymiz
+        if ext.lower() == ".webp":
+            return
 
         try:
             # Rasmni ochish va WebP formatga o‘tkazish
             img = Image.open(img_path).convert("RGB")
             img.save(webp_path, "webp", quality=85)
 
-            # Eski faylni o‘chirib, yangisini `image` sifatida saqlaymiz
-            os.remove(img_path)
-            self.image.name = self.image.name.replace(ext, ".webp")
-
-            # O‘zgartirilgan fayl nomini saqlaymiz
+            # Fayl nomini yangilaymiz
+            self.image.name = self.image.name.rsplit(".", 1)[0] + ".webp"
             super().save(update_fields=["image"])
+
+            # Eski faylni o‘chirib tashlaymiz
+            if os.path.exists(img_path):
+                os.remove(img_path)
+
         except Exception as e:
             print("❌ Rasmni WebP ga o‘tkazishda xatolik:", e)
 
@@ -436,25 +483,33 @@ class RegisterImage(BaseModel):
     image = models.ImageField(upload_to='register_photos/')
 
     def save(self, *args, **kwargs):
-        # Avval rasmni oddiy saqlaymiz
+        # Avval rasmni odatiy saqlaymiz
         super().save(*args, **kwargs)
 
-        # Fayl manzili
+        if not self.image:
+            return  # Agar rasm bo'lmasa, hech narsa qilmaymiz
+
         img_path = self.image.path
         base, ext = os.path.splitext(img_path)
         webp_path = base + ".webp"
+
+        # Agar fayl allaqachon WebP bo'lsa, o'tkazmaymiz
+        if ext.lower() == ".webp":
+            return
 
         try:
             # Rasmni ochish va WebP formatga o‘tkazish
             img = Image.open(img_path).convert("RGB")
             img.save(webp_path, "webp", quality=85)
 
-            # Eski faylni o‘chirib, yangisini `image` sifatida saqlaymiz
-            os.remove(img_path)
-            self.image.name = self.image.name.replace(ext, ".webp")
-
-            # O‘zgartirilgan fayl nomini saqlaymiz
+            # Fayl nomini yangilaymiz
+            self.image.name = self.image.name.rsplit(".", 1)[0] + ".webp"
             super().save(update_fields=["image"])
+
+            # Eski faylni o‘chirib tashlaymiz
+            if os.path.exists(img_path):
+                os.remove(img_path)
+
         except Exception as e:
             print("❌ Rasmni WebP ga o‘tkazishda xatolik:", e)
 
